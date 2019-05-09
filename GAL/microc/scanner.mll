@@ -29,6 +29,7 @@ rule token = parse
 | ">"      { GT }
 | ">="     { GEQ }
 | "&&"     { AND }
+| '"'      { DQUOT }
 | "||"     { OR }
 | "!"      { NOT }
 | "if"     { IF }
