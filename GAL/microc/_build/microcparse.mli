@@ -11,6 +11,8 @@ type token =
   | DIVIDE
   | MOD
   | ASSIGN
+  | INCR
+  | DECR
   | NOT
   | EQ
   | NEQ

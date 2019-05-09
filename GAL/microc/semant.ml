@@ -107,6 +107,8 @@ let check (globals, functions) =
           let (t, e') = expr e in
           let ty = match op with
             Neg when t = Int || t = Float -> t
+          | Incr when t = Int -> Int
+          | Decr when t = Int -> Int 
           | Not when t = Bool -> Bool
           | _ -> raise (Failure ("illegal unary operator " ^ 
                                  string_of_uop op ^ string_of_typ t ^
@@ -119,7 +121,7 @@ let check (globals, functions) =
           let same = t1 = t2 in
           (* Determine expression type based on operator and operand types *)
           let ty = match op with
-            Add | Sub | Mult | Div | Mod when same && t1 = Int   -> Int
+            Add | Sub | Mult | Div | Mod  when same && t1 = Int   -> Int
           | Add | Sub | Mult | Div when same && t1 = Float -> Float
           | Equal | Neq            when same               -> Bool
           | Less | Leq | Greater | Geq

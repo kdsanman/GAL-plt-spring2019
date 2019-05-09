@@ -272,14 +272,6 @@ cc -o test-ops1.exe test-ops1.s printbig.o
 diff -b test-ops1.out tests/test-ops1.out > test-ops1.diff
 ###### SUCCESS
 
-###### Testing test-ops2
-./microc.native tests/test-ops2.mc > test-ops2.ll
-llc -relocation-model=pic test-ops2.ll > test-ops2.s
-cc -o test-ops2.exe test-ops2.s printbig.o
-./test-ops2.exe
-diff -b test-ops2.out tests/test-ops2.out > test-ops2.diff
-###### SUCCESS
-
 ###### Testing test-printbig
 ./microc.native tests/test-printbig.mc > test-printbig.ll
 llc -relocation-model=pic test-printbig.ll > test-printbig.s
