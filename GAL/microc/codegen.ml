@@ -31,6 +31,7 @@ let translate (globals, functions) =
   and i8_t       = L.i8_type     context
   and i1_t       = L.i1_type     context
   and float_t    = L.double_type context
+  and str_t      = L.pointer_type (L.i8_type context) 
   and void_t     = L.void_type   context in
 
   (* Return the LLVM type for a MicroC type *)
@@ -38,6 +39,7 @@ let translate (globals, functions) =
       A.Int   -> i32_t
     | A.Bool  -> i1_t
     | A.Float -> float_t
+    | A.Str   -> str_t
     | A.Void  -> void_t
   in
 
@@ -77,6 +79,7 @@ let translate (globals, functions) =
     let builder = L.builder_at_end context (L.entry_block the_function) in
 
     let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder
+    and str_format_str = L.build_global_stringptr "%s\n" "fmt" builder
     and float_format_str = L.build_global_stringptr "%g\n" "fmt" builder in
 
     (* Construct the function's "locals": formal arguments and locally
@@ -111,6 +114,7 @@ let translate (globals, functions) =
     let rec expr builder ((_, e) : sexpr) = match e with
 	SLiteral i  -> L.const_int i32_t i
       | SBoolLit b  -> L.const_int i1_t (if b then 1 else 0)
+      | SStrLit s   -> L.build_global_stringptr s "string" builder
       | SFliteral l -> L.const_float_of_string float_t l
       | SNoexpr     -> L.const_int i32_t 0
       | SId s       -> L.build_load (lookup s) s builder
@@ -160,14 +164,19 @@ let translate (globals, functions) =
           | A.Incr -> raise (Failure "Incr should never be called in codegen")
           | A.Decr -> raise (Failure "Decr should never be called in codegen")  
           | A.Not                  -> L.build_not) e' "tmp" builder
-      | SCall ("print", [e]) | SCall ("printb", [e]) ->
-	  L.build_call printf_func [| int_format_str ; (expr builder e) |]
-	    "printf" builder
+
+        |  SCall ("print", [e]) | SCall ("printb", [e]) ->
+          L.build_call printf_func [| int_format_str ; (expr builder e) |]
+            "printf" builder
+      | SCall ("prints", [e]) ->
+          L.build_call printf_func [| str_format_str ; (expr builder e) |] "print f" builder
       | SCall ("printbig", [e]) ->
-	  L.build_call printbig_func [| (expr builder e) |] "printbig" builder
-      | SCall ("printf", [e]) -> 
-	  L.build_call printf_func [| float_format_str ; (expr builder e) |]
-	    "printf" builder
+          L.build_call printbig_func [| (expr builder e) |] "printbig" builder
+      | SCall ("printf", [e]) ->
+          L.build_call printf_func [| float_format_str ; (expr builder e) |]
+            "printf" builder
+
+      
       | SCall (f, args) ->
          let (fdef, fdecl) = StringMap.find f function_decls in
 	 let llargs = List.rev (List.map (expr builder) (List.rev args)) in

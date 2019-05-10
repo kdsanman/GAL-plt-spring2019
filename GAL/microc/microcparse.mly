@@ -6,6 +6,8 @@ open Ast
 
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA PLUS MINUS TIMES DIVIDE MOD ASSIGN 
 %token INCR DECR
+%token <string> STR_LIT
+%token STR
 %token DQUOT
 %token NOT EQ NEQ LT LEQ GT GEQ AND OR
 %token RETURN IF ELSE FOR WHILE INT BOOL FLOAT VOID
@@ -58,6 +60,7 @@ typ:
     INT   { Int   }
   | BOOL  { Bool  }
   | FLOAT { Float }
+  | STR   { Str   }
   | VOID  { Void  }
 
 vdecl_list:
@@ -90,6 +93,7 @@ expr:
   | FLIT	     { Fliteral($1)           }
   | BLIT             { BoolLit($1)            }
   | ID               { Id($1)                 }
+  | STR_LIT          { StrLit($1)             } 
   | expr PLUS   expr { Binop($1, Add,   $3)   }
   | expr MINUS  expr { Binop($1, Sub,   $3)   }
   | expr TIMES  expr { Binop($1, Mult,  $3)   }
@@ -105,8 +109,8 @@ expr:
   | expr OR     expr { Binop($1, Or,    $3)   }
   | MINUS expr %prec NOT { Unop(Neg, $2)      }
   | NOT expr         { Unop(Not, $2)          }
-  | ID INCR          {Assign("MARK", (Binop(Id($1), Add, Literal(1)))) }   
-  | ID DECR          {Assign("MARK", (Binop(Id($1), Sub, Literal(1)))) }
+  | ID INCR          {Assign("K", (Binop(Id($1), Add, Literal(1)))) }   
+  | ID DECR          {Assign("K", (Binop(Id($1), Sub, Literal(1)))) }
 | ID  ASSIGN expr   { Assign($1, $3)         }
   | ID LPAREN args_opt RPAREN { Call($1, $3)  }
   | LPAREN expr RPAREN { $2                   }
