@@ -71,7 +71,7 @@ let translate (globals, functions) =
   let string_length_t = 
           L.function_type i32_t [| str_t |] in
   let string_length_f = 
-          L.declare_function "string_length" string_length_t the_module in
+          L.declare_function "str_size" string_length_t the_module in
 
 
 

@@ -77,7 +77,8 @@ char *string_concat(char *s1, char *s2)
 
 int str_size(char *a)
 {
-    return strlen(a);
+	printf("HI!!!");
+ return strlen(a);
 }
 
 

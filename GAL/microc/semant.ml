@@ -44,7 +44,8 @@ let check (globals, functions) =
 	    ("printf", Float);
             ("prints", Str);
             ("printbig", Int);
-            ("lens",  Str)
+            ("lens",  Str);
+            ("string_concat", (Str; Str))            
                                                         ]
   in
 
