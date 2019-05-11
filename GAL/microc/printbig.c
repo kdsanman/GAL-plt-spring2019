@@ -3,7 +3,8 @@
  */
 
 #include <stdio.h>
-
+#include <string.h>
+#include <stdlib.h> 
 /*
  * Font information: one byte per row, 8 rows per character
  * In order, space, 0-9, A-Z
@@ -64,6 +65,26 @@ void printbig(int c)
   } while (index & 0x7); 
 }
 
+
+
+char *string_concat(char *s1, char *s2) 
+{  
+    char *new = (char *) malloc(strlen(s1) + strlen(s2) + 1);
+    strcpy(new, s1);
+    strcat(new, s2);
+    return new;
+}
+
+int str_size(char *a)
+{
+    return strlen(a);
+}
+
+
+void magic(int e)
+{
+  printf("Hello babes");
+}
 
 #ifdef BUILD_TEST
 int main()

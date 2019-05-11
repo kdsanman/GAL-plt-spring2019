@@ -61,6 +61,25 @@ let translate (globals, functions) =
       L.function_type i32_t [| i32_t |] in
   let printbig_func : L.llvalue =
       L.declare_function "printbig" printbig_t the_module in
+  
+  let string_concat_t : L.lltype =
+    L.function_type str_t [| str_t; str_t |] in
+  let string_concat_f : L.llvalue =
+    L.declare_function "string_concat" string_concat_t the_module in
+
+
+  let string_length_t = 
+          L.function_type i32_t [| str_t |] in
+  let string_length_f = 
+          L.declare_function "string_length" string_length_t the_module in
+
+
+
+  let magic_t : L.lltype = 
+      L.function_type i32_t [| i32_t |] in
+  let magic_func : L.llvalue =
+      L.declare_function "magic" magic_t the_module in
+
 
   (* Define each function (arguments and return type) so we can 
      call it even before we've created its body *)
@@ -138,7 +157,15 @@ let translate (globals, functions) =
 	  | A.And | A.Or ->
 	      raise (Failure "internal error: semant should have rejected and/or on float")
 	  ) e1' e2' "tmp" builder
-      | SBinop (e1, op, e2) ->
+      
+      |  SBinop ((A.Str,_ ) as e1, op, e2) ->
+        let e1' = expr builder e1
+        and e2' = expr builder e2 in
+        (match op with
+           A.Add     -> L.build_call string_concat_f [| e1'; e2' |] "string_concat" builder
+ | _ -> raise (Failure ("operation " ^ (A.string_of_op op) ^ " not implemented")))
+
+       | SBinop (e1, op, e2) ->
 	  let e1' = expr builder e1
 	  and e2' = expr builder e2 in
 	  (match op with
@@ -164,8 +191,8 @@ let translate (globals, functions) =
           | A.Incr -> raise (Failure "Incr should never be called in codegen")
           | A.Decr -> raise (Failure "Decr should never be called in codegen")  
           | A.Not                  -> L.build_not) e' "tmp" builder
-
-        |  SCall ("print", [e]) | SCall ("printb", [e]) ->
+           
+      |  SCall ("print", [e]) | SCall ("printb", [e]) ->
           L.build_call printf_func [| int_format_str ; (expr builder e) |]
             "printf" builder
       | SCall ("prints", [e]) ->
@@ -175,7 +202,9 @@ let translate (globals, functions) =
       | SCall ("printf", [e]) ->
           L.build_call printf_func [| float_format_str ; (expr builder e) |]
             "printf" builder
-
+     | SCall ("lens", [s]) -> L.build_call string_length_f [| expr builder s |] "lens" builder
+      | SCall ("magic", [e]) ->
+          L.build_call magic_func [| str_format_str; (expr builder e) |] "magic_t" builder
       
       | SCall (f, args) ->
          let (fdef, fdecl) = StringMap.find f function_decls in
