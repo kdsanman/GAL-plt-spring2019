@@ -6,7 +6,8 @@ int main()
   int len; 
   b = "errr";
   c = "reassign";
-  print(lens(b));
-  string_concat(b, c);
+  print(lens(c));
+  a = string_concat(b,c);
+  prints(a);
   return 0;
 }
