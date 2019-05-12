@@ -9,6 +9,7 @@ open Ast
 %token <string> STR_LIT
 %token STR
 %token DQUOT
+%token LIST LBRACK RBRACK
 %token NOT EQ NEQ LT LEQ GT GEQ AND OR
 %token RETURN IF ELSE FOR WHILE INT BOOL FLOAT VOID
 %token <int> LITERAL
@@ -62,9 +63,13 @@ typ:
   | FLOAT { Float }
   | STR   { Str   }
   | VOID  { Void  }
+  | LIST LT typ GT  { List($3) }
 
 vdecl_list:
-    /* nothing */    { [] }
+    /* nothing */    { [(Int, "__i");
+                        (List(Int), "__intlist");
+                        (List(Str),"__strlist");
+                        (Int, "__l")] }
   | vdecl_list vdecl { $2 :: $1 }
 
 vdecl:
@@ -89,11 +94,13 @@ expr_opt:
   | expr          { $1 }
 
 expr:
-    LITERAL          { Literal($1)            }
-  | FLIT	     { Fliteral($1)           }
-  | BLIT             { BoolLit($1)            }
-  | ID               { Id($1)                 }
-  | STR_LIT          { StrLit($1)             } 
+    LITERAL                     { Literal($1)            }
+  | FLIT	                      { Fliteral($1)           }
+  | BLIT                        { BoolLit($1)            }
+  | ID                          { Id($1)                 }
+  | STR_LIT                     { StrLit($1)             }
+  | LBRACK args_opt RBRACK      { ListLit($2)        }
+
   | expr PLUS   expr { Binop($1, Add,   $3)   }
   | expr MINUS  expr { Binop($1, Sub,   $3)   }
   | expr TIMES  expr { Binop($1, Mult,  $3)   }
@@ -111,11 +118,11 @@ expr:
   | NOT expr         { Unop(Not, $2)          }
   | ID INCR          {Assign("K", (Binop(Id($1), Add, Literal(1)))) }   
   | ID DECR          {Assign("K", (Binop(Id($1), Sub, Literal(1)))) }
-| ID  ASSIGN expr   { Assign($1, $3)         }
+  | ID  ASSIGN expr   { Assign($1, $3)         }
   | ID LPAREN args_opt RPAREN { Call($1, $3)  }
   | LPAREN expr RPAREN { $2                   }
  
-
+/* for lists */
 args_opt:
     /* nothing */ { [] }
   | args_list  { List.rev $1 }

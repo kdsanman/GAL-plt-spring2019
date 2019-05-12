@@ -24,6 +24,7 @@ type typ =   Int
            | Float 
            | Str 
            | Void
+           | List of typ
 
 type bind = typ * string
 
@@ -38,6 +39,7 @@ type expr =
   | Assign of string * expr
   | Call of string * expr list
   | Noexpr
+  | ListLit of expr list
 
 type stmt =
     Block of stmt list
@@ -87,6 +89,7 @@ let rec string_of_expr = function
   | BoolLit(false) -> "false"
   | StrLit(e) -> "\"" ^ e ^ "\""
   | Id(s) -> s
+  | ListLit(l) -> "[" ^ String.concat "," (List.map string_of_expr l) ^ "]" 
   | Binop(e1, o, e2) ->
       string_of_expr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_expr e2
   | Unop(o, e) -> string_of_uop o ^ string_of_expr e
@@ -108,12 +111,13 @@ let rec string_of_stmt = function
       string_of_expr e3  ^ ") " ^ string_of_stmt s
   | While(e, s) -> "while (" ^ string_of_expr e ^ ") " ^ string_of_stmt s
 
-let string_of_typ = function
+let rec string_of_typ = function
     Int -> "int"
   | Bool -> "bool"
   | Float -> "float"
   | Str -> "String"
   | Void -> "void"
+  | List(l) -> "list" ^ "<" ^ string_of_typ l ^ ">"
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 

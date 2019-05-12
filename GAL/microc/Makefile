@@ -1,14 +1,14 @@
 # "make test" Compiles everything and runs the regression tests
 
-.PHONY : test
-test : all testall.sh
+.PHONY: test
+test: all testall.sh
 	./testall.sh
 
 # "make all" builds the executable as well as the "printbig" library designed
 # to test linking external code
 
-.PHONY : all
-all : microc.native GAL.o
+.PHONY: all
+all: microc.native GAL.o
 
 # "make microc.native" compiles the compiler
 #
@@ -17,20 +17,26 @@ all : microc.native GAL.o
 #
 # See https://github.com/ocaml/ocamlbuild/blob/master/manual/manual.adoc
 
-microc.native :
+microc.native: GAL.bc
 	opam config exec -- \
-	ocamlbuild -use-ocamlfind microc.native
+	ocamlbuild -use-ocamlfind -pkgs llvm,llvm.analysis,llvm.bitreader  -cflags -w,+a-3 microc.native
+
+
+GAL.bc: GAL.c
+	clang -emit-llvm -o GAL.bc -c GAL.c -Wno-varargs
 
 # "make clean" removes all generated files
 
-.PHONY : clean
-clean :
+.PHONY: clean
+clean:
 	ocamlbuild -clean
 	rm -rf testall.log ocamlllvm *.diff
-	rm GAL.o
+	rm -rf *.o
+	rm -rf *.bc
+	rm -rf *.output
 # Testing the "printbig" example
 
-GAL :GAL.c
+GAL: GAL.c
 	cc -o GAL -DBUILD_TEST GAL.c
 
 # Building the tarball

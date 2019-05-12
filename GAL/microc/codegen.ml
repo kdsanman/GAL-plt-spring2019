@@ -14,13 +14,28 @@ http://llvm.moe/ocaml/
 
 module L = Llvm
 module A = Ast
+open Ast
 open Sast 
 
 module StringMap = Map.Make(String)
 
+let get_type(t, _) = t
+let first_element (myList) = match myList with
+ [] -> Void
+| first_e1 :: _ -> get_type(first_e1)
+
+let check_list_type m =
+  let (t, _) = m in 
+  match t with
+   List(ty) -> ty
+  |_ -> raise (Failure ("List must be of type list in ListLit (CODEGEN): " ^ string_of_typ t))
+
 (* translate : Sast.program -> Llvm.module *)
 let translate (globals, functions) =
   let context    = L.global_context () in
+
+  let llmem_graph = L.MemoryBuffer.of_file "GAL.bc" in
+  let llm_graph = Llvm_bitreader.parse_bitcode context llmem_graph in
   
   (* Create the LLVM compilation module into which
      we will generate code *)
@@ -32,7 +47,12 @@ let translate (globals, functions) =
   and i1_t       = L.i1_type     context
   and float_t    = L.double_type context
   and str_t      = L.pointer_type (L.i8_type context) 
-  and void_t     = L.void_type   context in
+  and void_t     = L.void_type   context 
+  and void_ptr_t = L.pointer_type (L.i8_type context)
+  and lst_t      = L.pointer_type (match L.type_by_name llm_graph "struct.list" with
+      None -> raise (Failure "Missing implementation for struct list")
+    | Some t -> t)
+  in
 
   (* Return the LLVM type for a MicroC type *)
   let ltype_of_typ = function
@@ -41,6 +61,7 @@ let translate (globals, functions) =
     | A.Float -> float_t
     | A.Str   -> str_t
     | A.Void  -> void_t
+    | A.List _ -> lst_t
   in
 
   (* Create a map of global variables after creating each *)
@@ -61,33 +82,33 @@ let translate (globals, functions) =
       L.function_type i32_t [| i32_t |] in
   let printbig_func : L.llvalue =
       L.declare_function "printbig" printbig_t the_module in
-  
 
+   let printil_t : L.lltype = 
+      L.function_type lst_t [| lst_t |] in
+  let printil_func : L.llvalue = 
+      L.declare_function "printil" printil_t the_module in
 
-
-
-
-
+  let printl_t : L.lltype = 
+      L.function_type lst_t [| lst_t |] in
+  let printl_func : L.llvalue = 
+      L.declare_function "printl" printl_t the_module in
 
   let string_concat_t : L.lltype =
     L.function_type str_t [| str_t; str_t |] in
   let string_concat_f : L.llvalue =
     L.declare_function "string_concat" string_concat_t the_module in
 
-
-
-
-
-
-
-
-
   let string_length_t = 
           L.function_type i32_t [| str_t |] in
   let string_length_f = 
           L.declare_function "str_size" string_length_t the_module in
 
+  (* Functions for Lists. It is generic *)
+  let make_list_t = L.function_type lst_t [||] in
+  let make_list_func = L.declare_function "make_list" make_list_t the_module in
 
+  let list_add_tail_t = L.function_type i32_t [| lst_t; void_ptr_t |] in
+  let list_add_tail_func = L.declare_function "add_tail" list_add_tail_t the_module in
 
   (* Define each function (arguments and return type) so we can 
      call it even before we've created its body *)
@@ -145,6 +166,19 @@ let translate (globals, functions) =
       | SFliteral l -> L.const_float_of_string float_t l
       | SNoexpr     -> L.const_int i32_t 0
       | SId s       -> L.build_load (lookup s) s builder
+      | SListLit l -> let rec list_fill lst = (function
+          [] -> lst
+          | sx :: rest ->
+          let (t, _) = sx in 
+          let data = (match t with
+              A.List _  -> expr builder sx 
+            | _ -> let data = L.build_malloc (ltype_of_typ t) "data" builder in
+              let llvm =  expr builder sx 
+              in ignore(L.build_store llvm data builder); data)
+          in let data = L.build_bitcast data void_ptr_t "data" builder in
+            ignore(L.build_call list_add_tail_func [| lst; data |] "list_add_tail" builder); list_fill lst rest) in
+          let m = L.build_call make_list_func [||] "make_list" builder in
+          list_fill m l
       | SAssign (s, e) -> let e' = expr builder e in
                           ignore(L.build_store e' (lookup s) builder); e'
       | SBinop ((A.Float,_ ) as e1, op, e2) ->
@@ -211,22 +245,15 @@ let translate (globals, functions) =
           L.build_call printf_func [| float_format_str ; (expr builder e) |]
             "printf" builder
      | SCall ("lens", [s]) -> L.build_call string_length_f [| expr builder s |] "lens" builder
-     
-     
-     
-     
-     
+     | SCall ("printl", [e]) ->
+                L.build_call printl_func [| (expr builder e) |] "printl" builder
+      | SCall ("printil", [e]) ->
+                L.build_call printil_func [| (expr builder e) |] "printil" builder
      
      | SCall ("string_concat", [s1; s2]) -> 
                      L.build_call string_concat_f 
                      [| expr builder s1; expr builder s2 |] 
                      "string_concat" builder
-     
-
-
-
-
-
 
  | SCall (f, args) ->
          let (fdef, fdecl) = StringMap.find f function_decls in
