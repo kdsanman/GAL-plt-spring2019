@@ -98,6 +98,21 @@ char *string_copy(char *to, char *from)
   return strcpy(to,from);
 }
 
+char *tokenize(char *s1, char *delim) 
+{
+  return strtok(s1, delim);
+}
+
+char *find_char_string(char *source, int ch)
+{
+  return strchr(source, ch);
+}
+
+char *find_in_string(char *source, char *str_find)
+{
+  return strstr(source, str_find);
+}
+
 #ifdef BUILD_TEST
 int main()
 {
