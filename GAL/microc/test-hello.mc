@@ -7,5 +7,6 @@ int main()
   b = "errr";
   c = "reassign";
   print(lens(b));
+  string_concat(b, c);
   return 0;
 }

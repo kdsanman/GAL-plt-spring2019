@@ -68,6 +68,18 @@ void printbig(int c)
 
 
 
+/* Struct Definitions */ 
+
+typedef struct Test_case{
+  int a;
+  int b;
+  int c;
+} test_case;
+
+
+
+/* String Functions */
+
 char *string_concat(char *s1, char *s2) 
 {  
     char *new = (char *) malloc(strlen(s1) + strlen(s2) + 1);
