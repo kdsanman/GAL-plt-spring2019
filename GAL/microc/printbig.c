@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h> 
+
 /*
  * Font information: one byte per row, 8 rows per character
  * In order, space, 0-9, A-Z
@@ -77,14 +78,14 @@ char *string_concat(char *s1, char *s2)
 
 int str_size(char *a)
 {
-	printf("HI!!!");
- return strlen(a);
+   return strlen(a);
 }
 
 
-void magic(int e)
+char magic(int e)
 {
   printf("Hello babes");
+  return 'e';
 }
 
 #ifdef BUILD_TEST
