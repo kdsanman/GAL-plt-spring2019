@@ -9,6 +9,19 @@ module StringMap = Map.Make(String)
    throws an exception if something is wrong.
 
    Check each global variable, then check each function *)
+let get_type(t, _) = t
+let first_element (myList) = match myList with
+ [] -> Void
+| first_e1 :: _ -> get_type(first_e1)
+
+(* Use this function to check if the sexpr is acceptable element in list*)
+let valid_element_type = function
+        (Void,_) -> raise(Failure("Invalid List<Void>!"))
+  | _ -> ()
+
+let check_type (ex, ty) = 
+  if ex = ty then () 
+  else raise (Failure ("Mismatch desired expr and type!"))
 
 let check (globals, functions) =
 
@@ -23,6 +36,19 @@ let check (globals, functions) =
 	  raise (Failure ("duplicate " ^ kind ^ " " ^ n1))
       | _ :: t -> dups t
     in dups (List.sort (fun (_,a) (_,b) -> compare a b) binds)
+  in
+
+  let check_list_binds (binds : sexpr list) =
+      List.iter valid_element_type binds;
+
+      let rec same_type = function
+          [] -> ()
+      | ((t1,_) :: (t2,_) :: _) when t1 != t2 ->
+              raise (Failure ("List elements type mismatch."))
+      | _ :: t -> same_type t
+      in same_type (List.sort (fun (a,_) (b,_) -> compare a b) binds);
+      
+      (*first_element(binds)*)
   in
 
   (**** Check global variables ****)
@@ -45,6 +71,8 @@ let check (globals, functions) =
             ("prints", Void, [(Str, "x")]);
             ("printbig", Void, [(Int, "x")]);
             ("lens",  Int, [(Str, "x")]);
+            ("printl", Void, [(List(Str), "x")]);
+            ("printil", Void, [(List(Int), "x")]);
             ("string_concat", Str, [(Str, "x"); (Str, "y")])            
                                                         ]
   in
@@ -96,12 +124,14 @@ let check (globals, functions) =
     in
 
     (* Return a semantically-checked expression, i.e., with a type *)
-    let rec expr = function
+    let rec expr =   function
         Literal  l -> (Int, SLiteral l)
       | Fliteral l -> (Float, SFliteral l)
       | BoolLit l  -> (Bool, SBoolLit l)
       | StrLit l   -> (Str, SStrLit l)
       | Noexpr     -> (Void, SNoexpr)
+      | ListLit l  -> check_list_binds (List.map expr l);
+              (List(first_element(List.map expr l)), SListLit (List.map expr l))
       | Id s       -> (type_of_identifier s, SId s)
       | Assign(var, e) as ex -> 
           let lt = type_of_identifier var
@@ -133,6 +163,8 @@ let check (globals, functions) =
           | Less | Leq | Greater | Geq
                      when same && (t1 = Int || t1 = Float) -> Bool
           | And | Or when same && t1 = Bool -> Bool
+          | Add when same && t1 = List(Int) -> List(Int)
+          | Add when same && t1 = List(Str) -> List(Str)
           | _ -> raise (
 	      Failure ("illegal binary operator " ^
                        string_of_typ t1 ^ " " ^ string_of_op op ^ " " ^

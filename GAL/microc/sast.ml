@@ -8,12 +8,14 @@ and sx =
   | SFliteral of string
   | SBoolLit of bool
   | SStrLit of string
+  | SListLit of sexpr list
   | SId of string
   | SBinop of sexpr * op * sexpr
   | SUnop of uop * sexpr
   | SAssign of string * sexpr
   | SCall of string * sexpr list
   | SNoexpr
+
 
 type sstmt =
     SBlock of sstmt list
@@ -43,6 +45,7 @@ let rec string_of_sexpr (t, e) =
   | SFliteral(l) -> l
   | SId(s) -> s
   | SStrLit(e) -> e
+  | SListLit(l) -> "[" ^ String.concat "," (List.map string_of_sexpr l) ^ "]"
   | SBinop(e1, o, e2) ->
       string_of_sexpr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_sexpr e2
   | SUnop(o, e) -> string_of_uop o ^ string_of_sexpr e

@@ -5,13 +5,13 @@
 let digit = ['0' - '9']
 let digits = digit+
 
-
-
 rule token = parse
   [' ' '\t' '\r' '\n'] { token lexbuf } (* Whitespace *)
 | "/*"     { comment lexbuf }           (* Comments *)
 | '('      { LPAREN }
 | ')'      { RPAREN }
+| '['	   { LBRACK }
+| ']'	   { RBRACK }
 | '{'      { LBRACE }
 | '}'      { RBRACE }
 | ';'      { SEMI }
@@ -39,6 +39,8 @@ rule token = parse
 | "else"   { ELSE }
 | "for"    { FOR }
 | "while"  { WHILE }
+| "list"   { LIST }
+| "List"   { LIST }
 | "return" { RETURN }
 | "int"    { INT }
 | "bool"   { BOOL }

@@ -2,6 +2,7 @@
  *  A function illustrating how to link C code to code generated from LLVM 
  */
 
+#include "GAL.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h> 
@@ -111,6 +112,274 @@ char *find_char_string(char *source, int ch)
 char *find_in_string(char *source, char *str_find)
 {
   return strstr(source, str_find);
+}
+
+
+/*
+ * LIST METHODS
+ */
+
+/*
+ * Initializes an empty list.
+ */
+struct list * make_list() {
+
+  struct list *l;
+  l = malloc(sizeof(struct list));
+  if (l == NULL)
+    return NULL;
+
+  l->size = 0;
+        l->head = 0;
+  return l;
+}
+
+/*
+ * Returns the size of a list.
+ */
+int size(struct list *l) {
+
+  return l->size;
+}
+
+/*
+ * Returns the element at index i of the list.
+ */
+void * list_get(struct list *l, int i) {
+
+  if (l->head == NULL || i >= l->size || i < 0)
+    return NULL;
+
+  struct list_node *current = l->head;
+  int j = 0;
+  while (j != i) {
+    current = current->next;
+                ++j;
+  }
+
+  return current->data;
+}
+
+/*
+ * Sets the element at index i to data.
+ * Will return 1 if successful (valid i)
+ * and 0 otherwise.
+ */
+int set(struct list *l, int i, void *data) {
+
+  if (l->head == NULL || i >= l->size || i < 0)
+    return 0;
+
+  struct list_node *current = l->head;
+  int j = 0;
+  while (j != i) {
+    current = current->next;
+        ++j;
+  }
+
+  current->data = data;
+  return 1;
+}
+
+/*
+ * Adds to the front of the list.
+ * Returns a 1 if successful and 0 otherwise.
+ */
+int add_head(struct list *l, void *data) {
+
+  struct list_node *node = (struct list_node *)malloc(sizeof(struct list_node));
+  if (node == NULL)
+    return 0;
+
+  node->data = data;
+  node->next = l->head;
+  l->head = node;
+  ++l->size;
+  return 1;
+}
+
+/*
+ * Adds to the end of the list.
+ * Returns a 1 if successful and 0 otherwise.
+ */
+int add_tail(struct list *l, void *data) {
+
+  struct list_node *node = (struct list_node *)malloc(sizeof(struct list_node));
+  if (node == NULL) {
+    return 0;
+  }
+  node->data = data;
+  node->next = NULL;
+
+  /* if the list is empty, this node is the head */
+  if (l->head == NULL) {
+      ++l->size;
+      l->head = node;
+      return 1;
+  }
+  struct list_node *current = l->head;
+  while (current->next != NULL) {
+    current = current->next;
+  }
+
+  /* current is now the last node in the list */
+  current->next = node;
+  ++l->size;
+  return 1;
+}
+
+/*
+ * Returns data from the head of the list and removes it.
+ */
+void * remove_head(struct list *l) {
+
+  if (l->head == NULL)
+    return NULL;
+
+  struct list_node *oldHead = l->head;
+  l->head = oldHead->next;
+  void *data = oldHead->data;
+  free(oldHead);
+  l->size -= 1;
+  return data;
+}
+
+/*
+ * Returns data from the tail of a list and removes it.
+ */
+void * remove_tail(struct list *l) {
+
+  if (l->head == NULL)
+    return NULL;
+
+  if (l->head->next == NULL) {
+    return remove_head(l);
+  }
+
+  struct list_node *slow = l->head;
+  struct list_node *fast = l->head->next;
+
+  while (fast->next != NULL) {
+    slow = fast;
+    fast = fast->next;
+  }
+
+  /* slow is now the second to last node in the list */
+  void *data = fast->data;
+  slow->next = NULL;
+  l->size -= 1;
+  free(fast);
+  return data;
+}
+
+/*
+ * Prints out list of elements in a String list.
+ * Used for testing.
+ */
+void printl(struct list *l) {
+
+  printf("[");
+  struct list_node *current = l->head;
+  while (current != NULL)
+        {
+            if(current -> next == NULL)
+            {
+
+              printf("%s", current -> data);
+            }
+            else
+            {
+                printf("%s,", current->data);
+            }
+            current = current->next;
+  }
+
+  printf("]\n");
+}
+
+/*
+ * Prints out list of elements in a list.
+ * Used for testing.
+ */
+void printil(struct list *l) {
+
+  printf("[");
+  struct list_node *current = l->head;
+  while (current != NULL)
+        {
+            if(current -> next == NULL)
+            {
+                printf("%d", *(int *) current -> data);
+            }
+            else
+            {
+                printf("%d,", *(int *)current->data);
+            }
+            current = current->next;
+  }
+
+  printf("]\n");
+}
+
+/*
+ * Build a new list that is concatenating two lists.
+ */
+struct list * concat(struct list * a, struct list * b) {
+  struct list *  new_list = make_list();
+  struct list_node * current = a -> head;
+  while (current) {
+    add_tail(new_list, current -> data);
+    current = current -> next;
+  }
+  current = b -> head;
+  while(current) {
+    add_tail(new_list, current -> data);
+    current = current -> next;
+  }
+  return new_list;
+
+}
+
+/* For use of primitive int casted to void * for generic linked list*/
+int add_head_int (struct list * l, int data)
+{
+    int * d = malloc(sizeof(int));
+    *d = data;
+    return add_head(l, d);
+}
+
+int add_tail_int (struct list * l, int data)
+{
+    int * d = malloc(sizeof(int));
+    *d = data;
+    return add_tail(l, d);
+}
+
+int list_get_int(struct list * l, int index)
+{
+    void * answer = list_get(l, index);
+    return *(int *) answer;
+}
+
+int list_set_int(struct list * l, int index, int E)
+{
+    int answer = list_get_int(l, index);
+    int * d = malloc(sizeof(int));
+    *d = E;
+    set(l, index, (void *) d);
+    return answer;
+}
+
+int remove_head_int(struct list * l)
+{
+    void * answer = remove_head(l);
+    return *(int *) answer;
+}
+
+int remove_tail_int(struct list * l)
+{
+    void * answer = remove_tail(l);
+    return *(int *) answer;
 }
 
 #ifdef BUILD_TEST
