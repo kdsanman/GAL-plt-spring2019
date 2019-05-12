@@ -65,8 +65,10 @@ let translate (globals, functions) =
 
 
 
-
-
+  let substring_t : L.lltype =
+    L.function_type str_t [| str_t; str_t |] in
+  let substring_f : L.llvalue =
+    L.declare_function "substring" substring_t the_module in
 
 
   let string_concat_t : L.lltype =
@@ -75,18 +77,10 @@ let translate (globals, functions) =
     L.declare_function "string_concat" string_concat_t the_module in
 
 
-
-
-
-
-
-
-
   let string_length_t = 
           L.function_type i32_t [| str_t |] in
   let string_length_f = 
           L.declare_function "str_size" string_length_t the_module in
-
 
 
   (* Define each function (arguments and return type) so we can 
@@ -224,7 +218,10 @@ let translate (globals, functions) =
      
 
 
-
+     | SCall ("substring", [s1; s2]) ->
+                     L.build_call substring_f
+                     [| expr builder s1; expr builder s2 |]
+                     "substring" builder
 
 
 

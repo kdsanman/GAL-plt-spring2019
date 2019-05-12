@@ -108,7 +108,7 @@ char *find_char_string(char *source, int ch)
   return strchr(source, ch);
 }
 
-char *find_in_string(char *source, char *str_find)
+char *substring(char *source, char *str_find)
 {
   return strstr(source, str_find);
 }

@@ -45,6 +45,7 @@ let check (globals, functions) =
             ("prints", Void, [(Str, "x")]);
             ("printbig", Void, [(Int, "x")]);
             ("lens",  Int, [(Str, "x")]);
+            ("substring", Str, [(Str, "x"); (Str, "y")]);
             ("string_concat", Str, [(Str, "x"); (Str, "y")])            
                                                         ]
   in
