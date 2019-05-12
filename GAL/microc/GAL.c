@@ -93,6 +93,11 @@ int str_size(char *a)
    return strlen(a);
 }
 
+char *string_copy(char *to, char *from)
+{
+  return strcpy(to,from);
+}
+
 #ifdef BUILD_TEST
 int main()
 {
