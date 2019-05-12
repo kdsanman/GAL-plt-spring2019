@@ -75,12 +75,6 @@ let translate (globals, functions) =
 
 
 
-  let magic_t : L.lltype = 
-      L.function_type i32_t [| i32_t |] in
-  let magic_func : L.llvalue =
-      L.declare_function "magic" magic_t the_module in
-
-
   (* Define each function (arguments and return type) so we can 
      call it even before we've created its body *)
   let function_decls : (L.llvalue * sfunc_decl) StringMap.t =
@@ -203,9 +197,6 @@ let translate (globals, functions) =
           L.build_call printf_func [| float_format_str ; (expr builder e) |]
             "printf" builder
      | SCall ("lens", [s]) -> L.build_call string_length_f [| expr builder s |] "lens" builder
-      | SCall ("magic", [e]) ->
-          L.build_call magic_func [| str_format_str; (expr builder e) |] "magic_t" builder
-      
       | SCall (f, args) ->
          let (fdef, fdecl) = StringMap.find f function_decls in
 	 let llargs = List.rev (List.map (expr builder) (List.rev args)) in
