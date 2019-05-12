@@ -3,9 +3,9 @@
 To run:
 ```
 make
-./microc.native -a  (ast check)
-./microc.native -s test-hello.mc  
-./microc.native test-hello.mc > temp.ll
+./microc.native -a TEST_FILE_NAME
+./microc.native -s TEST_FILE_NAME  
+./microc.native TEST_FILE_NAME > temp.ll
 llc temp.ll
 clang GAL.c temp.s
 ./a.out
