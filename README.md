@@ -1,11 +1,11 @@
 # plt-spring2019
 
-To run:
+To run make sure you are inside the repository GAL:
 ```
 make
-./microc.native -a TEST_FILE_NAME
-./microc.native -s TEST_FILE_NAME  
-./microc.native TEST_FILE_NAME > temp.ll
+./gal.native -a TEST_FILE_NAME
+./gal.native -s TEST_FILE_NAME  
+./gal.native TEST_FILE_NAME > temp.ll
 llc temp.ll
 clang GAL.c temp.s
 ./a.out
