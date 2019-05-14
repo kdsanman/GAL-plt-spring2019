@@ -40,7 +40,6 @@ rule token = parse
 | "for"    { FOR }
 | "while"  { WHILE }
 | "list"   { LIST }
-| "List"   { LIST }
 | "return" { RETURN }
 | "int"    { INT }
 | "bool"   { BOOL }
