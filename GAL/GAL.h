@@ -28,7 +28,7 @@ void * node_remove_head(struct node *l);
 int node_add_tail_int(struct node * l, int data);
 int node_add_head(struct node *l, void *data);
 int node_add_tail(struct node *l, void *data);
-void * node_get(struct node *n);
+void * node_get(struct node *n, int i);
 int size_node(struct node *n);
 void free_node(struct node *m);
 

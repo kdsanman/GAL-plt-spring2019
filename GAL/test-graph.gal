@@ -5,14 +5,14 @@ def int main()
   list<int> b;
   node A;
 
-  b = [1];
+  #b = [1];#
 
   /* return_value = A.set_data_int(3); */
-  return_value = 1;
+  #return_value = 1;#
 
-  A.set_data([3,1]);
+  A.set_data([3]);
 
-  print(return_value);
-  #A.get_data();#
+  #print(return_value);#
+  A.get();
   return 0;
 }

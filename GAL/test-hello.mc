@@ -1,4 +1,4 @@
-int main()
+def int main()
 {
   String a;
   String b;

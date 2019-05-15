@@ -67,18 +67,6 @@ void printbig(int c)
   } while (index & 0x7); 
 }
 
-
-
-/* Struct Definitions */ 
-
-typedef struct Test_case{
-  int a;
-  int b;
-  int c;
-} test_case;
-
-
-
 /* String Functions */
 
 char *string_concat(char *s1, char *s2) 
@@ -144,7 +132,7 @@ int node_set_int(struct node * l, int E)
 
 int node_get_int(struct node * l)
 {
-    void * answer = node_get(l);
+    void * answer = node_get(l, 0);
     return *(int *) answer;
 }
 
@@ -255,13 +243,17 @@ int node_add_tail(struct node *n, void *data) {
 /*
  * Returns the data of a node.
  */
-void * node_get(struct node *n) {
+void * node_get(struct node *n, int i) {
 
   if (n->head == NULL)
     return NULL;
 
   struct list_node *current = n->head;
-
+  int j = 0;
+  while (j != i) {
+    current = current->next;
+                ++j;
+  }
   return current->data;
 }
 
