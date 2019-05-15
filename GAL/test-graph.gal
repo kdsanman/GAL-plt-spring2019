@@ -1,0 +1,18 @@
+def int main()
+{
+  # Comment test #
+  int return_value;
+  list<int> b;
+  node A;
+
+  b = [1];
+
+  /* return_value = A.set_data_int(3); */
+  return_value = 1;
+
+  A.set_data([3,1]);
+
+  print(return_value);
+  #A.get_data();#
+  return 0;
+}

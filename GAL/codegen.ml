@@ -52,6 +52,9 @@ let translate (globals, functions) =
   and lst_t      = L.pointer_type (match L.type_by_name llm_graph "struct.list" with
       None -> raise (Failure "Missing implementation for struct list")
     | Some t -> t)
+  and node_t      = L.pointer_type (match L.type_by_name llm_graph "struct.node" with
+      None -> raise (Failure "Missing implementation for struct node")
+    | Some t -> t)
   in
 
   (* Return the LLVM type for a GAL type *)
@@ -62,6 +65,7 @@ let translate (globals, functions) =
     | A.Str   -> str_t
     | A.Void  -> void_t
     | A.List _ -> lst_t
+    | A.Node -> node_t
   in
 
   (* Create a map of global variables after creating each *)
@@ -109,6 +113,39 @@ let translate (globals, functions) =
 
   let list_add_tail_t = L.function_type i32_t [| lst_t; void_ptr_t |] in
   let list_add_tail_func = L.declare_function "add_tail" list_add_tail_t the_module in
+
+  let list_size_t = L.function_type i32_t [| lst_t |] in
+  let list_size_func = L.declare_function "size" list_size_t the_module in
+
+  let list_get_t = L.function_type void_ptr_t [| lst_t; i32_t |] in
+  let list_get_func = L.declare_function "list_get" list_get_t the_module in
+
+  (* functions for Nodes. Generic *)
+  let make_node_t = L.function_type node_t [||] in
+  let make_node_func = L.declare_function "make_node" make_node_t the_module in
+
+  let node_size_t = L.function_type i32_t [| node_t |] in
+  let node_size_func = L.declare_function "size_node" node_size_t the_module in
+
+  let node_get_data_t = L.function_type void_ptr_t [| node_t |] in
+  let node_get_data_func = L.declare_function "node_get" node_get_data_t the_module in
+
+  let node_add_tail_t = L.function_type i32_t [| node_t; void_ptr_t |] in
+  let node_add_tail_func = L.declare_function "node_add_tail" node_add_tail_t the_module in
+
+  (* Casting functions *)
+
+  let node_set_int_t = L.function_type i32_t [| node_t; i32_t |] in
+  let node_set_int_func = L.declare_function "node_set_int" node_set_int_t the_module in
+
+  let node_add_head_int_t = L.function_type i32_t [| node_t; i32_t |] in
+  let node_add_head_int_func = L.declare_function "node_add_head_int" node_add_head_int_t the_module in
+
+  let node_rm_head_int_t = L.function_type i32_t [| node_t |] in
+  let node_rm_head_int_func = L.declare_function "node_remove_head_int" node_rm_head_int_t the_module in
+
+  let node_add_tail_int_t = L.function_type i32_t [| node_t; i32_t |] in
+  let node_add_tail_int_func = L.declare_function "node_add_tail_int" node_add_tail_int_t the_module in
 
   (* Define each function (arguments and return type) so we can 
      call it even before we've created its body *)
@@ -160,12 +197,29 @@ let translate (globals, functions) =
 
     (* Construct code for an expression; return its value *)
     let rec expr builder ((_, e) : sexpr) = match e with
-	SLiteral i  -> L.const_int i32_t i
+	     SLiteral i  -> L.const_int i32_t i
       | SBoolLit b  -> L.const_int i1_t (if b then 1 else 0)
       | SStrLit s   -> L.build_global_stringptr s "string" builder
       | SFliteral l -> L.const_float_of_string float_t l
       | SNoexpr     -> L.const_int i32_t 0
       | SId s       -> L.build_load (lookup s) s builder
+      | SNodeLit l ->  L.build_call make_node_func [||] "make_node" builder
+
+      | SNodeSet l -> let rec node_fill lst = (function
+          [] -> lst
+          | sx :: rest ->
+          let (t, _) = sx in 
+          let data = (match t with
+              A.Node -> expr builder sx 
+            | _ -> let data = L.build_malloc (ltype_of_typ t) "data" builder in
+              let llvm =  expr builder sx 
+              in ignore(L.build_store llvm data builder); data)
+          in let data = L.build_bitcast data void_ptr_t "data" builder in
+            ignore(L.build_call node_add_tail_func [| lst; data |] "node_add_tail" builder); node_fill lst rest) in
+          let m = L.build_call make_node_func [||] "make_node" builder in
+          node_fill m l
+
+
       | SListLit l -> let rec list_fill lst = (function
           [] -> lst
           | sx :: rest ->
@@ -179,6 +233,7 @@ let translate (globals, functions) =
             ignore(L.build_call list_add_tail_func [| lst; data |] "list_add_tail" builder); list_fill lst rest) in
           let m = L.build_call make_list_func [||] "make_list" builder in
           list_fill m l
+
       | SAssign (s, e) -> let e' = expr builder e in
                           ignore(L.build_store e' (lookup s) builder); e'
       | SBinop ((A.Float,_ ) as e1, op, e2) ->

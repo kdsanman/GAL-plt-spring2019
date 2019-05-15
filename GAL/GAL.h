@@ -6,6 +6,31 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+/*
+============================
+ ****  Node methods  ****
+ ============================
+ */
+
+struct node {
+    int size;
+    struct list_node * head;
+};
+
+
+struct node * make_node();
+int node_set_int(struct node * l, int E);
+int node_get_int(struct node * l);
+int node_set(struct node *l, void *data);
+int node_add_head_int(struct node * n, int data);
+int node_remove_head_int(struct node * l);
+void * node_remove_head(struct node *l);
+int node_add_tail_int(struct node * l, int data);
+int node_add_head(struct node *l, void *data);
+int node_add_tail(struct node *l, void *data);
+void * node_get(struct node *n);
+int size_node(struct node *n);
+void free_node(struct node *m);
 
 /*
 ============================
@@ -35,6 +60,7 @@ struct list {
     struct list_node * head;
 };
 
+
 /*
  * Initializes an empty list.
  */
@@ -61,6 +87,11 @@ void * remove_head(struct list *l);
  * Returns data from the tail of a list and removes it.
  */
 void * remove_tail(struct list *l);
+
+/*
+ * Returns the data of element at index i of the list.
+ */
+void * list_get(struct list *l, int i);
 
 /*
  * Frees allocated memory for a list.

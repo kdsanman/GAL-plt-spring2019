@@ -116,6 +116,171 @@ char *find_in_string(char *source, char *str_find)
 
 
 /*
+ * NODE METHODS
+ */
+
+/*
+ * Initializes an empty node.
+ */
+struct node * make_node() {
+
+  struct node *n;
+  n = malloc(sizeof(struct node));
+  if (n == NULL)
+    return NULL;
+
+  n->size = 0;
+  n->head = 0;
+  return n;
+}
+
+int node_set_int(struct node * l, int E)
+{
+    int * d = malloc(sizeof(int));
+    *d = E;
+    node_set(l, (void *) d);
+    return 0;
+}
+
+int node_get_int(struct node * l)
+{
+    void * answer = node_get(l);
+    return *(int *) answer;
+}
+
+/*
+ * Sets the element at index i to data.
+ * Will return 1 if successful (valid i)
+ * and 0 otherwise.
+ */
+int node_set(struct node *l, void *data) {
+
+  if (l->head == NULL)
+    return 0;
+
+  struct list_node *current = l->head;
+
+  current->data = data;
+  return 1;
+}
+
+/* For use of primitive int casted to void * for generic linked list*/
+int node_add_head_int(struct node * n, int data)
+{
+    printf("Adding data of type int to head of Node.");
+    int * d = malloc(sizeof(int));
+    *d = data;
+    return node_add_head(n, d);
+}
+
+
+int node_remove_head_int(struct node * l)
+{
+    void * answer = node_remove_head(l);
+    return *(int *) answer;
+}
+
+/*
+ * Returns data from the head of the list and removes it.
+ */
+void * node_remove_head(struct node *l) {
+
+  if (l->head == NULL)
+    return NULL;
+
+  struct list_node *oldHead = l->head;
+  l->head = oldHead->next;
+  void *data = oldHead->data;
+  free(oldHead);
+  l->size -= 1;
+  return data;
+}
+
+int node_add_tail_int(struct node * l, int data)
+{
+    int * d = malloc(sizeof(int));
+    *d = data;
+    return node_add_tail(l, d);
+}
+
+
+/*
+ * Adds to the front of the list.
+ * Returns a 1 if successful and 0 otherwise.
+ */
+int node_add_head(struct node *l, void *data) {
+
+  struct list_node *node = (struct list_node *)malloc(sizeof(struct list_node));
+  if (node == NULL)
+    return 0;
+
+  node->data = data;
+  node->next = l->head;
+  l->head = node;
+  ++l->size;
+  return 1;
+}
+
+/*
+ * Adds to the end of the list.
+ * Returns a 1 if successful and 0 otherwise.
+ */
+int node_add_tail(struct node *n, void *data) {
+
+  struct list_node *node = (struct list_node *)malloc(sizeof(struct list_node));
+  if (node == NULL) {
+    return 0;
+  }
+  node->data = data;
+  node->next = NULL;
+
+  /* if the list is empty, this node is the head */
+  if (n->head == NULL) {
+      ++n->size;
+      n->head = node;
+      return 1;
+  }
+  struct list_node *current = n->head;
+  while (current->next != NULL) {
+    current = current->next;
+  }
+
+  /* current is now the last node in the list */
+  current->next = node;
+  ++n->size;
+  return 1;
+}
+
+
+/*
+ * Returns the data of a node.
+ */
+void * node_get(struct node *n) {
+
+  if (n->head == NULL)
+    return NULL;
+
+  struct list_node *current = n->head;
+
+  return current->data;
+}
+
+/*
+ * Returns the size of a node.
+ */
+int size_node(struct node *n) {
+
+  return n->size;
+}
+
+/*
+ * Frees allocated memory for a node.
+ */
+void free_node(struct node *m) {
+  free(m);
+}
+
+/*
  * LIST METHODS
  */
 
@@ -130,9 +295,11 @@ struct list * make_list() {
     return NULL;
 
   l->size = 0;
-        l->head = 0;
+  l->head = 0;
   return l;
 }
+
+
 
 /*
  * Returns the size of a list.
@@ -180,6 +347,8 @@ int set(struct list *l, int i, void *data) {
   current->data = data;
   return 1;
 }
+
+
 
 /*
  * Adds to the front of the list.
