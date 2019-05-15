@@ -1,0 +1,12 @@
+def int main()
+{
+  int return_value;
+  list<int> b;
+
+  b = [2,3, 4, 5, 5, 9, 10, 559, 10];
+
+  return_value = b[7];
+  print(return_value);
+
+  return 0;
+}
