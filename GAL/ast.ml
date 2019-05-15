@@ -44,6 +44,7 @@ type expr =
   | ListLit of expr list
   | NodeLit of expr
   | NodeSet of expr list
+  | NodeGet of expr * expr
 
 type stmt =
     Block of stmt list
@@ -103,6 +104,7 @@ let rec string_of_expr = function
   | Noexpr -> ""
   | NodeLit(n) -> string_of_expr n
   | NodeSet(l) -> ".set_data(" ^ "[" ^ String.concat "," (List.map string_of_expr l) ^ "]" ^ ")"
+  | NodeGet(n, idx) -> string_of_expr n ^ ".get()"
 
 let rec string_of_stmt = function
     Block(stmts) ->

@@ -1,4 +1,4 @@
-int main()
+def int main()
 {
   String b;
   String c;
@@ -9,5 +9,5 @@ int main()
   d = ["x","y","z"];
   prints(b);
   printil(a);
-  printl(d);
+  printl(d); 
 }

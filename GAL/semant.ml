@@ -135,6 +135,7 @@ let check (globals, functions) =
       | Id s       -> (type_of_identifier s, SId s)
       | NodeLit n  -> (Node, SNodeLit (expr n))
       | NodeSet l ->  (Node, SNodeSet (List.map expr l))
+      | NodeGet(n, idx) -> (Node, SNodeGet (expr n, expr idx))
 
       | Assign(var, e) as ex -> 
           let lt = type_of_identifier var

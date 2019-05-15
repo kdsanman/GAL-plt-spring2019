@@ -10,7 +10,7 @@ open Ast
 %token STR GRAPH
 %token DQUOT
 %token LIST 
-%token NODE NODE_SET_DATA
+%token NODE NODE_SET_DATA NODE_GET_DATA
 %token NOT EQ NEQ LT LEQ GT GEQ AND OR
 %token RETURN IF ELSE FOR WHILE INT BOOL FLOAT VOID
 %token <int> LITERAL
@@ -126,7 +126,9 @@ expr:
   | ID LPAREN args_opt RPAREN { Call($1, $3)  }
   | LPAREN expr RPAREN { $2                   }
 
-  | expr NODE_SET_DATA LPAREN LBRACK args_opt RBRACK RPAREN  { NodeSet($5) }
+  | ID NODE_SET_DATA LPAREN LBRACK args_opt RBRACK RPAREN  { NodeSet($5) }
+  | expr NODE_GET_DATA LPAREN RPAREN     { NodeGet($1, Literal(0)) }
+
  
 /* for lists */
 args_opt:
