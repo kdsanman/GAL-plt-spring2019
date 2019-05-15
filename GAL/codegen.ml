@@ -120,6 +120,9 @@ let translate (globals, functions) =
   let list_get_t = L.function_type void_ptr_t [| lst_t; i32_t |] in
   let list_get_func = L.declare_function "list_get" list_get_t the_module in
 
+  let listSort_t = L.function_type void_ptr_t [| lst_t |] in
+  let listSort_func = L.declare_function "listSort" listSort_t the_module in
+
   (* functions for Nodes. Generic *)
   let make_node_t = L.function_type node_t [||] in
   let make_node_func = L.declare_function "make_node" make_node_t the_module in
@@ -299,12 +302,14 @@ let translate (globals, functions) =
       | SCall ("printf", [e]) ->
           L.build_call printf_func [| float_format_str ; (expr builder e) |]
             "printf" builder
-     | SCall ("lens", [s]) -> L.build_call string_length_f [| expr builder s |] "lens" builder
+     | SCall ("lens", [s]) -> 
+                     L.build_call string_length_f [| expr builder s |] "lens" builder
      | SCall ("printl", [e]) ->
                 L.build_call printl_func [| (expr builder e) |] "printl" builder
-      | SCall ("printil", [e]) ->
+     | SCall ("printil", [e]) ->
                 L.build_call printil_func [| (expr builder e) |] "printil" builder
-     
+     | SCall ("listSort", [l]) -> 
+                     L.build_call listSort_func [| expr builder l |] "listSort" builder 
      | SCall ("string_concat", [s1; s2]) -> 
                      L.build_call string_concat_f 
                      [| expr builder s1; expr builder s2 |] 

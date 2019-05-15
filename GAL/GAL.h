@@ -126,4 +126,6 @@ void printl(struct list *l);
  */
 void printil(struct list *l);
 
+void sortedInsert(struct list_node**, struct list_node*);
+void listSort2(struct list_node**);
 #endif

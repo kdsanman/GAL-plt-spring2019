@@ -543,6 +543,37 @@ int remove_tail_int(struct list * l)
     return *(int *) answer;
 }
 
+
+
+void listSort(struct list *head)
+{
+	struct list_node* temp = head->head;
+	//printf("%d\n", *(int *) temp->data);
+	while (temp)
+	{
+		//printf("%d\n", *(int *)temp->data);
+		struct list_node* min = temp;
+		struct list_node* r = temp->next;
+
+		while(r)
+		{
+			if (*(int *)min->data > *(int *)r->data)
+				min = r;
+			r = r->next;
+		}
+
+		int x = *(int *)temp->data;
+		*(int *)temp->data =*(int *) min->data;
+		*(int *)min->data = x;
+		temp = temp->next;
+	}
+}
+
+
+
+
+
+
 #ifdef BUILD_TEST
 int main()
 {

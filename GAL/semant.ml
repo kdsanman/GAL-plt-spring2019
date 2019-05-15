@@ -73,7 +73,8 @@ let check (globals, functions) =
             ("lens",  Int, [(Str, "x")]);
             ("printl", Void, [(List(Str), "x")]);
             ("printil", Void, [(List(Int), "x")]);
-            ("string_concat", Str, [(Str, "x"); (Str, "y")])            
+            ("string_concat", Str, [(Str, "x"); (Str, "y")]);
+            ("listSort", Void, [(List(Int), "x")])            
                                                         ]
   in
 
