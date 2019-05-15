@@ -9,7 +9,7 @@ open Ast
 %token <string> STR_LIT
 %token STR GRAPH
 %token DQUOT
-%token LIST 
+%token LIST LIST_GET 
 %token NODE NODE_SET_DATA NODE_GET_DATA
 %token NOT EQ NEQ LT LEQ GT GEQ AND OR
 %token RETURN IF ELSE FOR WHILE INT BOOL FLOAT VOID
@@ -104,6 +104,9 @@ expr:
   | ID                          { Id($1)                 }
   | STR_LIT                     { StrLit($1)             }
   | LBRACK args_opt RBRACK      { ListLit($2)        }
+  | expr LIST_GET LPAREN expr RPAREN            { ListGet($1, $4)       }
+  | expr LBRACK expr RBRACK       { ListGet($1, $3)       }
+
 
   | expr PLUS   expr { Binop($1, Add,   $3)   }
   | expr MINUS  expr { Binop($1, Sub,   $3)   }
@@ -128,6 +131,7 @@ expr:
 
   | ID NODE_SET_DATA LPAREN LBRACK args_opt RBRACK RPAREN  { NodeSet($5) }
   | expr NODE_GET_DATA LPAREN RPAREN     { NodeGet($1, Literal(0)) }
+
 
  
 /* for lists */

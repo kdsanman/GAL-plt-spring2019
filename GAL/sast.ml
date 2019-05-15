@@ -9,6 +9,7 @@ and sx =
   | SBoolLit of bool
   | SStrLit of string
   | SListLit of sexpr list
+  | SListGet of sexpr * sexpr
   | SNodeLit of sexpr
   | SNodeSet of sexpr list
   | SNodeGet of sexpr * sexpr
@@ -49,6 +50,7 @@ let rec string_of_sexpr (t, e) =
   | SId(s) -> s
   | SStrLit(e) -> e
   | SListLit(l) -> "[" ^ String.concat "," (List.map string_of_sexpr l) ^ "]"
+  | SListGet(l, idx) -> string_of_sexpr l ^ ".at(" ^ string_of_sexpr idx ^ ")"
   | SNodeLit(n) -> string_of_sexpr n
   | SNodeSet(l) -> ".set_data(" ^ "[" ^ String.concat "," (List.map string_of_sexpr l) ^ "]" ^ ")"
   | SNodeGet(n, idx) -> string_of_sexpr n ^ ".get()"

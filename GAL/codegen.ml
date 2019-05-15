@@ -236,6 +236,15 @@ let translate (globals, functions) =
             ignore(L.build_call list_add_tail_func [| lst; data |] "list_add_tail" builder); list_fill lst rest) in
           let m = L.build_call make_list_func [||] "make_list" builder in
           list_fill m l
+      | SListGet(l, idx) ->
+        let ltype = ltype_of_typ styp in
+        let lst = expr builder l in
+        let index = expr builder idx in
+        let data = L.build_call list_get_func [| lst; index |] "index" builder in
+          (match styp with 
+            A.List _ | A.Str -> L.build_bitcast data ltype "data" builder
+          | _ -> let data = L.build_bitcast data (L.pointer_type ltype) "data" builder in
+            L.build_load data "data" builder)
 
       | SAssign (s, e) -> let e' = expr builder e in
                           ignore(L.build_store e' (lookup s) builder); e'

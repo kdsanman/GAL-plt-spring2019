@@ -133,10 +133,12 @@ let check (globals, functions) =
       | Noexpr     -> (Void, SNoexpr)
       | ListLit l  -> check_list_binds (List.map expr l);
               (List(first_element(List.map expr l)), SListLit (List.map expr l))
+      | ListGet(l, i) -> check_type(get_type(expr i), Int);
+              (Int, SListGet (expr l, expr i))
       | Id s       -> (type_of_identifier s, SId s)
       | NodeLit n  -> (Node, SNodeLit (expr n))
       | NodeSet l ->  (Node, SNodeSet (List.map expr l))
-      | NodeGet(n, idx) -> (Node, SNodeGet (expr n, expr idx))
+      | NodeGet(n, idx) -> (Int, SNodeGet (expr n, expr idx))
 
       | Assign(var, e) as ex -> 
           let lt = type_of_identifier var
