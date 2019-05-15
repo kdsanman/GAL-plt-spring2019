@@ -35,8 +35,9 @@ clean:
 	rm -rf *.o
 	rm -rf *.bc
 	rm -rf *.output
-# Testing the "printbig" example
 
+
+# Testing the "printbig" example
 GAL: GAL.c
 	cc -o GAL -DBUILD_TEST GAL.c
 
@@ -54,14 +55,14 @@ FAILS = \
   func8 func9 global1 global2 if1 if2 if3 nomain printbig printb print \
   return1 return2 while1 while2
 
-TESTFILES = $(TESTS:%=test-%.mc) $(TESTS:%=test-%.out) \
-	    $(FAILS:%=fail-%.mc) $(FAILS:%=fail-%.err)
+TESTFILES = $(TESTS:%=test-%.gal) $(TESTS:%=test-%.out) \
+	    $(FAILS:%=fail-%.gal) $(FAILS:%=fail-%.err)
 
 TARFILES = ast.ml sast.ml codegen.ml Makefile _tags gal.ml parser.mly \
 	README scanner.mll semant.ml testall.sh \
-	printbig.c arcade-font.pbm font2c \
+	GAL.c GAL.h arcade-font.pbm font2c \
 	Dockerfile \
-	$(TESTFILES:%=tests/%) 
+	$(TESTFILES:%=gal-tests/%) 
 
 gal.tar.gz : $(TARFILES)
 	cd .. && tar czf gal.tar.gz \

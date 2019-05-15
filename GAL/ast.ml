@@ -25,6 +25,8 @@ type typ =   Int
            | Str 
            | Void
            | List of typ
+           | Node
+
 
 type bind = typ * string
 
@@ -40,6 +42,8 @@ type expr =
   | Call of string * expr list
   | Noexpr
   | ListLit of expr list
+  | NodeLit of expr
+  | NodeSet of expr list
 
 type stmt =
     Block of stmt list
@@ -97,6 +101,8 @@ let rec string_of_expr = function
   | Call(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
   | Noexpr -> ""
+  | NodeLit(n) -> string_of_expr n
+  | NodeSet(l) -> ".set_data(" ^ "[" ^ String.concat "," (List.map string_of_expr l) ^ "]" ^ ")"
 
 let rec string_of_stmt = function
     Block(stmts) ->
@@ -118,6 +124,7 @@ let rec string_of_typ = function
   | Str -> "String"
   | Void -> "void"
   | List(l) -> "list" ^ "<" ^ string_of_typ l ^ ">"
+  | Node -> "node"
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 

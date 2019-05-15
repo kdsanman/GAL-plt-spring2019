@@ -16,7 +16,7 @@ let first_element (myList) = match myList with
 
 (* Use this function to check if the sexpr is acceptable element in list*)
 let valid_element_type = function
-        (Void,_) -> raise(Failure("Invalid List<Void>!"))
+        (Void,_) -> raise(Failure("Invalid List<Void>"))
   | _ -> ()
 
 let check_type (ex, ty) = 
@@ -133,6 +133,9 @@ let check (globals, functions) =
       | ListLit l  -> check_list_binds (List.map expr l);
               (List(first_element(List.map expr l)), SListLit (List.map expr l))
       | Id s       -> (type_of_identifier s, SId s)
+      | NodeLit n  -> (Node, SNodeLit (expr n))
+      | NodeSet l ->  (Node, SNodeSet (List.map expr l))
+
       | Assign(var, e) as ex -> 
           let lt = type_of_identifier var
           and (rt, e') = expr e in

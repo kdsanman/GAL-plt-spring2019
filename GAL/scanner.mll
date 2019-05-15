@@ -4,10 +4,12 @@
 
 let digit = ['0' - '9']
 let digits = digit+
+let newline = '\r' | '\n' | "\r\n"
 
 rule token = parse
   [' ' '\t' '\r' '\n'] { token lexbuf } (* Whitespace *)
 | "/*"     { comment lexbuf }           (* Comments *)
+| "#"      { comment lexbuf }           (* Comment *)
 | '('      { LPAREN }
 | ')'      { RPAREN }
 | '['	   { LBRACK }
@@ -43,10 +45,15 @@ rule token = parse
 | "return" { RETURN }
 | "int"    { INT }
 | "bool"   { BOOL }
+| "def"    { DEF }
+| "node"   { NODE }
 | "float"  { FLOAT }
 | "void"   { VOID }
 | "true"   { BLIT(true)  }
 | "false"  { BLIT(false) }
+
+| ".set_data" { NODE_SET_DATA }
+
 | digits as lxm { LITERAL(int_of_string lxm) }
 | digits '.'  digit* ( ['e' 'E'] ['+' '-']? digits )? as lxm { FLIT(lxm) }
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']*     as lxm { ID(lxm) }
@@ -56,4 +63,5 @@ rule token = parse
 
 and comment = parse
   "*/" { token lexbuf }
+| "#"  { token lexbuf }
 | _    { comment lexbuf }

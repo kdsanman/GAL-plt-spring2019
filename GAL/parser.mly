@@ -4,12 +4,13 @@
 open Ast
 %}
 
-%token SEMI LPAREN RPAREN LBRACE RBRACE COMMA PLUS MINUS TIMES DIVIDE MOD ASSIGN 
-%token INCR DECR
+%token SEMI LPAREN RPAREN LBRACE RBRACE COMMA PLUS MINUS TIMES DIVIDE MOD ASSIGN LBRACK RBRACK
+%token INCR DECR DEF
 %token <string> STR_LIT
-%token STR
+%token STR GRAPH
 %token DQUOT
-%token LIST LBRACK RBRACK
+%token LIST 
+%token NODE NODE_SET_DATA
 %token NOT EQ NEQ LT LEQ GT GEQ AND OR
 %token RETURN IF ELSE FOR WHILE INT BOOL FLOAT VOID
 %token <int> LITERAL
@@ -42,12 +43,12 @@ decls:
  | decls fdecl { (fst $1, ($2 :: snd $1)) }
 
 fdecl:
-   typ ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
-     { { typ = $1;
-	 fname = $2;
-	 formals = List.rev $4;
-	 locals = List.rev $7;
-	 body = List.rev $8 } }
+   DEF typ ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
+     { { typ = $2;
+	 fname = $3;
+	 formals = List.rev $5;
+	 locals = List.rev $8;
+	 body = List.rev $9 } }
 
 formals_opt:
     /* nothing */ { [] }
@@ -63,13 +64,16 @@ typ:
   | FLOAT { Float }
   | STR   { Str   }
   | VOID  { Void  }
+  | NODE  { Node }
   | LIST LT typ GT  { List($3) }
 
 vdecl_list:
-    /* nothing */    { [(Int, "__i");
+    /* nothing */    { [(Int, "__int");
                         (List(Int), "__intlist");
                         (List(Str),"__strlist");
-                        (Int, "__l")] }
+                        (Str, "__str");
+                        (Node, "__node");
+                        ]}
   | vdecl_list vdecl { $2 :: $1 }
 
 vdecl:
@@ -121,6 +125,8 @@ expr:
   | ID  ASSIGN expr   { Assign($1, $3)         }
   | ID LPAREN args_opt RPAREN { Call($1, $3)  }
   | LPAREN expr RPAREN { $2                   }
+
+  | expr NODE_SET_DATA LPAREN LBRACK args_opt RBRACK RPAREN  { NodeSet($5) }
  
 /* for lists */
 args_opt:
