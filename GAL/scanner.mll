@@ -54,6 +54,7 @@ rule token = parse
 
 | ".set_data" { NODE_SET_DATA }
 | ".get" { NODE_GET_DATA }
+| ".at"       { LIST_GET  }
 
 | digits as lxm { LITERAL(int_of_string lxm) }
 | digits '.'  digit* ( ['e' 'E'] ['+' '-']? digits )? as lxm { FLIT(lxm) }

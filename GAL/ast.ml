@@ -42,6 +42,7 @@ type expr =
   | Call of string * expr list
   | Noexpr
   | ListLit of expr list
+  | ListGet of expr * expr
   | NodeLit of expr
   | NodeSet of expr list
   | NodeGet of expr * expr
@@ -95,6 +96,8 @@ let rec string_of_expr = function
   | StrLit(e) -> "\"" ^ e ^ "\""
   | Id(s) -> s
   | ListLit(l) -> "[" ^ String.concat "," (List.map string_of_expr l) ^ "]" 
+  | ListGet(l, idx) -> string_of_expr l ^ ".at(" ^ string_of_expr idx ^ ")"
+
   | Binop(e1, o, e2) ->
       string_of_expr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_expr e2
   | Unop(o, e) -> string_of_uop o ^ string_of_expr e
