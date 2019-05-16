@@ -3,11 +3,18 @@ def int main()
   # Comment test #
   int return_value;
   list<int> b;
+  list<int> c;
+  list<int> d;
   node A;
   int len;
 
 
   b = [2,3, 4, 5, 5, 9, 10, 559, 10];
+  c = [1, 2, 3];
+
+  d = list_concat(b,c);
+
+  printil(d);
 
   /* return_value = A.set_data_int(3); */
   #return_value = 1;#
