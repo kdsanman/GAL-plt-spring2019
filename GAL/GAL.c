@@ -301,6 +301,10 @@ int size(struct list *l) {
   return l->size;
 }
 
+int list_len(struct list *l){
+  return size(l);
+}
+
 /*
  * Returns the element at index i of the list.
  */
@@ -345,11 +349,7 @@ int set(struct list *l, int i, void *data) {
 
 /*
  * List set an integer specifically
- *
- *
  */
-
-
 int list_set(struct list *l, int i, int data) {
 
   if (l->head == NULL || i >= l->size || i < 0)
@@ -365,9 +365,6 @@ int list_set(struct list *l, int i, int data) {
   current->data = (void *) &data;
   return 1;
 }
-
-
-
 
 /*
  * Adds to the front of the list.
