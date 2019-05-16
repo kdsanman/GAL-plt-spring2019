@@ -126,6 +126,11 @@ void printl(struct list *l);
  */
 void printil(struct list *l);
 
+/*
+ * Build a new list that is concatenating two lists.
+ */
+struct list * list_concat(struct list * a, struct list * b); 
+
 void sortedInsert(struct list_node**, struct list_node*);
 void listSort2(struct list_node**);
 #endif
