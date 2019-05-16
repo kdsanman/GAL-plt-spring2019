@@ -1,0 +1,21 @@
+def int main()
+{
+  int size;
+  list<int> b;
+
+  b = [2, 3, 4, 5, 5, 9, 10, 559, 10];
+
+  prints("Original list =");
+  printil(b);
+
+  list_set(b,4,100);
+
+  prints("Updated list = ");
+  printil(b);
+
+  prints("List size is = ");
+  size = list_len(b);
+  print(size);
+
+  return 0;
+}
