@@ -9,7 +9,7 @@ Additional test files to look at are in gal-tests/ directory.
 ## How to compile, run and test
 To run make sure you are inside the repository GAL:
 ```
-git clone https://github.com/kdsanman/plt-spring2019.git
+git clone https://github.com/kdsanman/GAL-plt-spring2019.git
 cd plt-spring2019
 make
 ./gal.native -a TEST_FILE_NAME
