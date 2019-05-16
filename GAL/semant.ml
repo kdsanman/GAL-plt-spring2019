@@ -76,7 +76,8 @@ let check (globals, functions) =
             ("string_concat", Str, [(Str, "x"); (Str, "y")]);
             ("listSort", Void, [(List(Int), "x")]);
             ("list_set", Int, [(List(Int), "x"); (Int, "y");(Int, "z")]);
-            ("list_len", Int, [(List(Int), "x")])            
+            ("list_len", Int, [(List(Int), "x")]);
+            ("list_concat", List(Int), [(List(Int), "x"); (List(Int), "y")])            
                                                         ]
   in
 
