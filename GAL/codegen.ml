@@ -107,6 +107,11 @@ let translate (globals, functions) =
   let string_length_f = 
           L.declare_function "str_size" string_length_t the_module in
 
+  let list_length_t = 
+          L.function_type i32_t [| lst_t |] in
+  let list_length_f = 
+          L.declare_function "list_len" list_length_t the_module in
+
   (* Functions for Lists. It is generic *)
   let make_list_t = L.function_type lst_t [||] in
   let make_list_func = L.declare_function "make_list" make_list_t the_module in
@@ -328,6 +333,9 @@ let translate (globals, functions) =
                      L.build_call string_concat_f 
                      [| expr builder s1; expr builder s2 |] 
                      "string_concat" builder
+
+    | SCall ("list_len", [l]) -> 
+                     L.build_call list_length_f [| expr builder l |] "list_len" builder
 
 
       | SNodeGet(l, idx) ->
