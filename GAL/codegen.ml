@@ -120,6 +120,9 @@ let translate (globals, functions) =
   let list_get_t = L.function_type void_ptr_t [| lst_t; i32_t |] in
   let list_get_func = L.declare_function "list_get" list_get_t the_module in
 
+  let list_set_t = L.function_type i32_t [| lst_t; i32_t; i32_t |] in
+  let list_set_func = L.declare_function "list_set" list_set_t the_module in 
+  
   let listSort_t = L.function_type void_ptr_t [| lst_t |] in
   let listSort_func = L.declare_function "listSort" listSort_t the_module in
 
@@ -319,6 +322,8 @@ let translate (globals, functions) =
                 L.build_call printil_func [| (expr builder e) |] "printil" builder
      | SCall ("listSort", [l]) -> 
                      L.build_call listSort_func [| expr builder l |] "listSort" builder 
+     | SCall ("list_set", [l; i; d]) ->
+                     L.build_call list_set_func [| expr builder l; expr builder i; expr builder d|] "list_set" builder
      | SCall ("string_concat", [s1; s2]) -> 
                      L.build_call string_concat_f 
                      [| expr builder s1; expr builder s2 |] 
