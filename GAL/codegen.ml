@@ -348,6 +348,9 @@ let translate (globals, functions) =
     | SCall ("list_len", [l]) -> 
                      L.build_call list_length_f [| expr builder l |] "list_len" builder
 
+      | SCall ("list_concat", [l; m]) ->
+                     L.build_call list_concat_func [| expr builder l; expr builder m |] "list_concat" builder
+
 
       | SNodeGet(l, idx) ->
         let ltype = ltype_of_typ styp in
