@@ -142,7 +142,6 @@ let check (globals, functions) =
               (Int, SListGet (expr l, expr i))
       | Id s       -> (type_of_identifier s, SId s)
       | NodeLit l  -> check_list_binds (List.map expr l); (Node, SNodeLit (List.map expr l))
-      (*| NodeSet l ->  (Node, SNodeSet (List.map expr l)) *)
       | NodeGet(n, idx) -> (Int, SNodeGet (expr n, expr idx))
 
       | Assign(var, e) as ex -> 

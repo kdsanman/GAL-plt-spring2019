@@ -11,7 +11,6 @@ and sx =
   | SListLit of sexpr list
   | SListGet of sexpr * sexpr
   | SNodeLit of sexpr list
-  | SNodeSet of sexpr list
   | SNodeGet of sexpr * sexpr
   | SId of string
   | SBinop of sexpr * op * sexpr
@@ -52,7 +51,6 @@ let rec string_of_sexpr (t, e) =
   | SListLit(l) -> "[" ^ String.concat "," (List.map string_of_sexpr l) ^ "]"
   | SListGet(l, idx) -> string_of_sexpr l ^ ".at(" ^ string_of_sexpr idx ^ ")"
   | SNodeLit(v) -> "[" ^ String.concat "," (List.map string_of_sexpr v) ^ "]" 
-  (*| SNodeSet(l) -> ".set_data(" ^ "[" ^ String.concat "," (List.map string_of_sexpr l) ^ "]" ^ ")" *)
   | SNodeGet(n, idx) -> string_of_sexpr n ^ ".get( " ^ string_of_sexpr idx ^ ")"
 
   | SBinop(e1, o, e2) ->

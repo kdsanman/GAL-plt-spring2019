@@ -107,20 +107,12 @@ let translate (globals, functions) =
   let string_length_f = 
           L.declare_function "str_size" string_length_t the_module in
 
-  let list_length_t = 
-          L.function_type i32_t [| lst_t |] in
-  let list_length_f = 
-          L.declare_function "list_len" list_length_t the_module in
-
   (* Functions for Lists. It is generic *)
   let make_list_t = L.function_type lst_t [||] in
   let make_list_func = L.declare_function "make_list" make_list_t the_module in
 
   let list_add_tail_t = L.function_type i32_t [| lst_t; void_ptr_t |] in
   let list_add_tail_func = L.declare_function "add_tail" list_add_tail_t the_module in
-
-  let list_size_t = L.function_type i32_t [| lst_t |] in
-  let list_size_func = L.declare_function "size" list_size_t the_module in
 
   let list_get_t = L.function_type void_ptr_t [| lst_t; i32_t |] in
   let list_get_func = L.declare_function "list_get" list_get_t the_module in
@@ -129,18 +121,13 @@ let translate (globals, functions) =
   let list_set_func = L.declare_function "list_set_int" list_set_t the_module in 
 
 
-  let node_set_t = L.function_type i32_t [| lst_t; i32_t |] in
-  let node_set_func = L.declare_function "node_set" node_set_t the_module in 
+  let node_set_t = L.function_type i32_t [| node_t; i32_t |] in
+  let node_set_func = L.declare_function "node_set_int" node_set_t the_module in 
  
   let list_length_t = 
           L.function_type i32_t [| lst_t |] in
   let list_length_f =
           L.declare_function "list_len" list_length_t the_module in
-
-  let node_get_t = 
-          L.function_type i32_t [| node_t |] in
-  let node_get_f =
-          L.declare_function "get_node" node_get_t the_module in
 
   let listSort_t = L.function_type void_ptr_t [| lst_t |] in
   let listSort_func = L.declare_function "listSort" listSort_t the_module in
@@ -152,9 +139,6 @@ let translate (globals, functions) =
   let make_node_t = L.function_type node_t [||] in
   let make_node_func = L.declare_function "make_node" make_node_t the_module in
 
-  let node_size_t = L.function_type i32_t [| node_t |] in
-  let node_size_func = L.declare_function "size_node" node_size_t the_module in
-
   let node_get_data_t = L.function_type void_ptr_t [| node_t; i32_t |] in
   let node_get_data_func = L.declare_function "node_get" node_get_data_t the_module in
 
@@ -162,18 +146,6 @@ let translate (globals, functions) =
   let node_add_tail_func = L.declare_function "node_add_tail" node_add_tail_t the_module in
 
   (* Casting functions *)
-
-  let node_set_int_t = L.function_type i32_t [| node_t; i32_t |] in
-  let node_set_int_func = L.declare_function "node_set_int" node_set_int_t the_module in
-
-  let node_add_head_int_t = L.function_type i32_t [| node_t; i32_t |] in
-  let node_add_head_int_func = L.declare_function "node_add_head_int" node_add_head_int_t the_module in
-
-  let node_rm_head_int_t = L.function_type i32_t [| node_t |] in
-  let node_rm_head_int_func = L.declare_function "node_remove_head_int" node_rm_head_int_t the_module in
-
-  let node_add_tail_int_t = L.function_type i32_t [| node_t; i32_t |] in
-  let node_add_tail_int_func = L.declare_function "node_add_tail_int" node_add_tail_int_t the_module in
 
   (* Define each function (arguments and return type) so we can 
      call it even before we've created its body *)
@@ -361,10 +333,6 @@ let translate (globals, functions) =
                      L.build_call string_concat_f 
                      [| expr builder s1; expr builder s2 |] 
                      "string_concat" builder
-
-    | SCall ("list_len", [l]) -> 
-                     L.build_call list_length_f [| expr builder l |] "list_len" builder
-
 
     | SCall ("node_set", [n; d]) -> 
                      L.build_call node_set_func [| expr builder n; expr builder d|] "node_set" builder
