@@ -1,9 +1,11 @@
 # plt-spring2019
 
-Test files you could use:
+Test files you could use on GAL folder:
 - test-hello.gal
 - test-list.gal
 - test-graph.gal
+
+Additional test files to look at are in gal-tests/ directory.
 
 To run make sure you are inside the repository GAL:
 ```
