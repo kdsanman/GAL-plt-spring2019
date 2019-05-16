@@ -1,0 +1,36 @@
+def int main()
+{
+
+	list<int> a;
+	a = [34, 7, 2, 4, 100, 5];
+	printil(a);
+	int i;	
+	int j;
+	int min;
+	int temp; 
+	i = 0;
+	
+	while(i < list_len(a))
+	{
+                
+	        min = i;
+		j = i;
+		while (j < list_len(a) ) 
+		{
+			if a[min] > a[j]
+			{
+				min = j;  
+			}
+		}
+		temp = a[i];
+		list_set(a, i, a[min]);
+		list_set(a, min, temp);
+		i = i + 1;
+	}
+	
+
+	printil(a);
+	return 0;
+}
+
+

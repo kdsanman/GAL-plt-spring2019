@@ -301,6 +301,7 @@ int size(struct list *l) {
   return l->size;
 }
 
+
 int list_len(struct list *l){
   return size(l);
 }
