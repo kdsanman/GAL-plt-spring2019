@@ -11,9 +11,18 @@ def int main()
   #return_value = 1;#
 
   A.set_data([3]);
+  printil(b);
 
+
+
+
+  list_set(b,4,100);
+
+
+
+  printil(b);
   /* return_value = b.at(7); */
-  return_value = b[7];
+  return_value = b[3];
   print(return_value);
   #A.get();#
   return 0;

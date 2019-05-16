@@ -342,6 +342,33 @@ int set(struct list *l, int i, void *data) {
 
 
 
+
+/*
+ * List set an integer specifically
+ *
+ *
+ */
+
+
+int list_set(struct list *l, int i, int data) {
+
+  if (l->head == NULL || i >= l->size || i < 0)
+    return 0;
+
+  struct list_node *current = l->head;
+  int j = 0;
+  while (j != i) {
+    current = current->next;
+        ++j;
+  }
+
+  current->data = (void *) &data;
+  return 1;
+}
+
+
+
+
 /*
  * Adds to the front of the list.
  * Returns a 1 if successful and 0 otherwise.
