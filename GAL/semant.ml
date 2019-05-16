@@ -78,7 +78,8 @@ let check (globals, functions) =
             ("list_set", Int, [(List(Int), "x"); (Int, "y");(Int, "z")]);
             ("list_len", Int, [(List(Int), "x")]);
             ("get_node", Int, [(Node, "x")]);
-            ("node_set", Void, [(Node, "x"); (Int, "z")])          
+            ("node_set", Void, [(Node, "x"); (Int, "z")]);
+            ("list_concat", List(Int), [(List(Int), "x"); (List(Int), "y")])
                                                         ]
   in
 

@@ -514,7 +514,7 @@ void printil(struct list *l) {
 /*
  * Build a new list that is concatenating two lists.
  */
-struct list * concat(struct list * a, struct list * b) {
+struct list * list_concat(struct list * a, struct list * b) {
   struct list *  new_list = make_list();
   struct list_node * current = a -> head;
   while (current) {
