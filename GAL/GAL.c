@@ -301,6 +301,11 @@ int size(struct list *l) {
   return l->size;
 }
 
+int list_len(struct list *l)
+{
+	return size(l);
+}
+
 /*
  * Returns the element at index i of the list.
  */

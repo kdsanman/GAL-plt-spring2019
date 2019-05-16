@@ -4,6 +4,8 @@ def int main()
   int return_value;
   list<int> b;
   node A;
+  int len;
+
 
   b = [2,3, 4, 5, 5, 9, 10, 559, 10];
 
@@ -14,8 +16,8 @@ def int main()
   printil(b);
 
 
-
-
+  len = list_len(b);
+  print(len);
   list_set(b,4,100);
 
 

@@ -122,7 +122,13 @@ let translate (globals, functions) =
 
   let list_set_t = L.function_type i32_t [| lst_t; i32_t; i32_t |] in
   let list_set_func = L.declare_function "list_set" list_set_t the_module in 
-  
+ 
+  let list_length_t = 
+          L.function_type i32_t [| lst_t |] in
+  let list_length_f =
+          L.declare_function "list_len" list_length_t the_module in
+
+
   let listSort_t = L.function_type void_ptr_t [| lst_t |] in
   let listSort_func = L.declare_function "listSort" listSort_t the_module in
 
@@ -316,6 +322,8 @@ let translate (globals, functions) =
             "printf" builder
      | SCall ("lens", [s]) -> 
                      L.build_call string_length_f [| expr builder s |] "lens" builder
+     | SCall ("list_len", [l]) ->
+                     L.build_call list_length_f [| expr builder l |] "list_len" builder
      | SCall ("printl", [e]) ->
                 L.build_call printl_func [| (expr builder e) |] "printl" builder
      | SCall ("printil", [e]) ->
