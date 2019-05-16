@@ -137,6 +137,9 @@ let translate (globals, functions) =
   let listSort_t = L.function_type void_ptr_t [| lst_t |] in
   let listSort_func = L.declare_function "listSort" listSort_t the_module in
 
+  let list_concat_t = L.function_type lst_t [| lst_t; lst_t |] in
+  let list_concat_func = L.declare_function "list_concat" list_concat_t the_module in
+
   (* functions for Nodes. Generic *)
   let make_node_t = L.function_type node_t [||] in
   let make_node_func = L.declare_function "make_node" make_node_t the_module in
@@ -344,6 +347,9 @@ let translate (globals, functions) =
 
     | SCall ("list_len", [l]) -> 
                      L.build_call list_length_f [| expr builder l |] "list_len" builder
+
+      | SCall ("list_concat", [l; m]) ->
+                     L.build_call list_concat_func [| expr builder l; expr builder m |] "list_concat" builder
 
 
       | SNodeGet(l, idx) ->
