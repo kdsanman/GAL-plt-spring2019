@@ -23,6 +23,7 @@ rule token = parse
 | '*'      { TIMES }
 | '/'      { DIVIDE }
 | '%'      { MOD }
+| '`'      { HAT }
 | "++"     { INCR }
 | "--"     { DECR }
 | '='      { ASSIGN }
@@ -51,10 +52,10 @@ rule token = parse
 | "void"   { VOID }
 | "true"   { BLIT(true)  }
 | "false"  { BLIT(false) }
-
-| ".set_data" { NODE_SET_DATA }
-| ".get" { NODE_GET_DATA }
-| ".at"       { LIST_GET  }
+ 
+| ".set"   { NODE_SET }
+| ".get"   { NODE_GET }
+| ".at"    { LIST_GET }
 
 | digits as lxm { LITERAL(int_of_string lxm) }
 | digits '.'  digit* ( ['e' 'E'] ['+' '-']? digits )? as lxm { FLIT(lxm) }

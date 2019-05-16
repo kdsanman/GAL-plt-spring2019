@@ -77,7 +77,9 @@ let check (globals, functions) =
             ("listSort", Void, [(List(Int), "x")]);
             ("list_set", Int, [(List(Int), "x"); (Int, "y");(Int, "z")]);
             ("list_len", Int, [(List(Int), "x")]);
-            ("list_concat", List(Int), [(List(Int), "x"); (List(Int), "y")])            
+            ("get_node", Int, [(Node, "x")]);
+            ("node_set", Void, [(Node, "x"); (Int, "z")]);
+            ("list_concat", List(Int), [(List(Int), "x"); (List(Int), "y")])
                                                         ]
   in
 
@@ -139,8 +141,8 @@ let check (globals, functions) =
       | ListGet(l, i) -> check_type(get_type(expr i), Int);
               (Int, SListGet (expr l, expr i))
       | Id s       -> (type_of_identifier s, SId s)
-      | NodeLit n  -> (Node, SNodeLit (expr n))
-      | NodeSet l ->  (Node, SNodeSet (List.map expr l))
+      | NodeLit l  -> check_list_binds (List.map expr l); (Node, SNodeLit (List.map expr l))
+      (*| NodeSet l ->  (Node, SNodeSet (List.map expr l)) *)
       | NodeGet(n, idx) -> (Int, SNodeGet (expr n, expr idx))
 
       | Assign(var, e) as ex -> 

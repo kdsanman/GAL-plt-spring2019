@@ -1,0 +1,14 @@
+def int main()
+{
+  int value;  
+  node A;
+  node B;
+  
+  A = `3`;
+  B = `6`;
+  value = A.get();
+  print(value);
+  value = B.get();
+  print(value);
+  return 0;
+}
