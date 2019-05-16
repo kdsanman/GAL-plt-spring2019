@@ -53,7 +53,6 @@ rule token = parse
 | "true"   { BLIT(true)  }
 | "false"  { BLIT(false) }
  
-| ".set"   { NODE_SET }
 | ".get"   { NODE_GET }
 | ".at"    { LIST_GET }
 

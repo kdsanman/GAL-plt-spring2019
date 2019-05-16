@@ -32,7 +32,7 @@ def int main()
 	a = [34, 7, 2, 4, 100, 5];
 	prints("Original list = ");
 	printil(a);
-	sort(a);
+	listSort(a);
 
   	prints("Sorted list = ");
 	printil(a);

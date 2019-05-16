@@ -10,7 +10,7 @@ open Ast
 %token STR GRAPH
 %token DQUOT HAT
 %token LIST LIST_GET 
-%token NODE  NODE_SET NODE_GET
+%token NODE NODE_GET
 %token NOT EQ NEQ LT LEQ GT GEQ AND OR
 %token RETURN IF ELSE FOR WHILE INT BOOL FLOAT VOID
 %token <int> LITERAL
@@ -106,7 +106,7 @@ expr:
   | LBRACK args_opt RBRACK      { ListLit($2)        }
   | expr LIST_GET LPAREN expr RPAREN            { ListGet($1, $4)       }
   | expr LBRACK expr RBRACK     { ListGet($1, $3)      }
-  | HAT args_opt HAT      { NodeLit($2)     }
+  | HAT args_opt HAT            { NodeLit($2)     }
 
 
   | expr PLUS   expr { Binop($1, Add,   $3)   }

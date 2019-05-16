@@ -1,0 +1,15 @@
+def int main(){
+	node A;
+	int value;
+
+	A = `10`;
+	value = A.get();
+	print(value);
+
+	# Change value of node A #
+	node_set(A, 40);
+	value = A.get();
+	print(value);
+
+	return 0;
+}
