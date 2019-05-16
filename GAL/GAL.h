@@ -31,6 +31,7 @@ int node_add_tail(struct node *l, void *data);
 void * node_get(struct node *n, int i);
 int size_node(struct node *n);
 void free_node(struct node *m);
+int get_node(struct node * n);
 
 /*
 ============================

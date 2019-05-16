@@ -8,9 +8,9 @@ open Ast
 %token INCR DECR DEF
 %token <string> STR_LIT
 %token STR GRAPH
-%token DQUOT
+%token DQUOT HAT
 %token LIST LIST_GET 
-%token NODE NODE_SET_DATA NODE_GET_DATA
+%token NODE  NODE_SET NODE_GET
 %token NOT EQ NEQ LT LEQ GT GEQ AND OR
 %token RETURN IF ELSE FOR WHILE INT BOOL FLOAT VOID
 %token <int> LITERAL
@@ -105,7 +105,8 @@ expr:
   | STR_LIT                     { StrLit($1)             }
   | LBRACK args_opt RBRACK      { ListLit($2)        }
   | expr LIST_GET LPAREN expr RPAREN            { ListGet($1, $4)       }
-  | expr LBRACK expr RBRACK       { ListGet($1, $3)       }
+  | expr LBRACK expr RBRACK     { ListGet($1, $3)      }
+  | HAT args_opt HAT      { NodeLit($2)     }
 
 
   | expr PLUS   expr { Binop($1, Add,   $3)   }
@@ -125,12 +126,11 @@ expr:
   | NOT expr         { Unop(Not, $2)          }
   | ID INCR          {Assign("K", (Binop(Id($1), Add, Literal(1)))) }   
   | ID DECR          {Assign("K", (Binop(Id($1), Sub, Literal(1)))) }
-  | ID  ASSIGN expr   { Assign($1, $3)         }
+  | ID ASSIGN expr   { Assign($1, $3)         }
   | ID LPAREN args_opt RPAREN { Call($1, $3)  }
   | LPAREN expr RPAREN { $2                   }
 
-  | ID NODE_SET_DATA LPAREN LBRACK args_opt RBRACK RPAREN  { NodeSet($5) }
-  | expr NODE_GET_DATA LPAREN RPAREN     { NodeGet($1, Literal(0)) }
+  | expr NODE_GET LPAREN RPAREN     { NodeGet($1, Literal(0)) }
 
 
  

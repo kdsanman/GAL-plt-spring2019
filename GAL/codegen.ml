@@ -126,13 +126,21 @@ let translate (globals, functions) =
   let list_get_func = L.declare_function "list_get" list_get_t the_module in
 
   let list_set_t = L.function_type i32_t [| lst_t; i32_t; i32_t |] in
-  let list_set_func = L.declare_function "list_set" list_set_t the_module in 
+  let list_set_func = L.declare_function "list_set_int" list_set_t the_module in 
+
+
+  let node_set_t = L.function_type i32_t [| lst_t; i32_t |] in
+  let node_set_func = L.declare_function "node_set" node_set_t the_module in 
  
   let list_length_t = 
           L.function_type i32_t [| lst_t |] in
   let list_length_f =
           L.declare_function "list_len" list_length_t the_module in
 
+  let node_get_t = 
+          L.function_type i32_t [| node_t |] in
+  let node_get_f =
+          L.declare_function "get_node" node_get_t the_module in
 
   let listSort_t = L.function_type void_ptr_t [| lst_t |] in
   let listSort_func = L.declare_function "listSort" listSort_t the_module in
@@ -220,22 +228,19 @@ let translate (globals, functions) =
       | SFliteral l -> L.const_float_of_string float_t l
       | SNoexpr     -> L.const_int i32_t 0
       | SId s       -> L.build_load (lookup s) s builder
-      | SNodeLit l ->  L.build_call make_node_func [||] "make_node" builder
-
-      | SNodeSet l -> let rec node_fill lst = (function
+      | SNodeLit l ->  let rec list_fill lst = (function
           [] -> lst
           | sx :: rest ->
           let (t, _) = sx in 
           let data = (match t with
-              A.Node -> expr builder sx 
+              A.List _ | A.Node -> expr builder sx 
             | _ -> let data = L.build_malloc (ltype_of_typ t) "data" builder in
               let llvm =  expr builder sx 
               in ignore(L.build_store llvm data builder); data)
           in let data = L.build_bitcast data void_ptr_t "data" builder in
-            ignore(L.build_call node_add_tail_func [| lst; data |] "node_add_tail" builder); node_fill lst rest) in
+            ignore(L.build_call node_add_tail_func [| lst; data |] "node_add_tail" builder); list_fill lst rest) in
           let m = L.build_call make_node_func [||] "make_node" builder in
-          node_fill m l
-
+          list_fill m l
 
       | SListLit l -> let rec list_fill lst = (function
           [] -> lst
@@ -250,13 +255,25 @@ let translate (globals, functions) =
             ignore(L.build_call list_add_tail_func [| lst; data |] "list_add_tail" builder); list_fill lst rest) in
           let m = L.build_call make_list_func [||] "make_list" builder in
           list_fill m l
+
+      | SNodeGet(l, idx) ->
+        let ltype = ltype_of_typ styp in
+        let node = expr builder l in
+        let index = expr builder idx in
+        let data = L.build_call node_get_data_func [| node; index |] "index" builder in
+          (match styp with 
+            A.List _ | A.Node | A.Str -> L.build_bitcast data ltype "data" builder
+          | _ -> let data = L.build_bitcast data (L.pointer_type ltype) "data" builder in
+            L.build_load data "data" builder)
+
+      
       | SListGet(l, idx) ->
         let ltype = ltype_of_typ styp in
         let lst = expr builder l in
         let index = expr builder idx in
         let data = L.build_call list_get_func [| lst; index |] "index" builder in
           (match styp with 
-            A.List _ | A.Str -> L.build_bitcast data ltype "data" builder
+            A.List _ | A.Node | A.Str -> L.build_bitcast data ltype "data" builder
           | _ -> let data = L.build_bitcast data (L.pointer_type ltype) "data" builder in
             L.build_load data "data" builder)
 
@@ -345,16 +362,9 @@ let translate (globals, functions) =
     | SCall ("list_len", [l]) -> 
                      L.build_call list_length_f [| expr builder l |] "list_len" builder
 
+    | SCall ("node_set", [n; d]) -> 
+                     L.build_call node_set_func [| expr builder n; expr builder d|] "node_set" builder
 
-      | SNodeGet(l, idx) ->
-        let ltype = ltype_of_typ styp in
-        let node = expr builder l in
-        let index = expr builder idx in
-        let data = L.build_call node_get_data_func [| node; index |] "index" builder in
-        (match styp with 
-         A.List _ | A.Node  -> L.build_bitcast data ltype "data" builder
-      | _ -> let data = L.build_bitcast data (L.pointer_type ltype) "data" builder in
-        L.build_load data "data" builder)
 
       | SCall (f, args) ->
          let (fdef, fdecl) = StringMap.find f function_decls in

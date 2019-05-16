@@ -43,7 +43,7 @@ type expr =
   | Noexpr
   | ListLit of expr list
   | ListGet of expr * expr
-  | NodeLit of expr
+  | NodeLit of expr list
   | NodeSet of expr list
   | NodeGet of expr * expr
 
@@ -105,9 +105,9 @@ let rec string_of_expr = function
   | Call(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
   | Noexpr -> ""
-  | NodeLit(n) -> string_of_expr n
-  | NodeSet(l) -> ".set_data(" ^ "[" ^ String.concat "," (List.map string_of_expr l) ^ "]" ^ ")"
-  | NodeGet(n, idx) -> string_of_expr n ^ ".get()"
+  | NodeLit(v) -> "[" ^ String.concat "," (List.map string_of_expr v) ^ "]" 
+  (*| NodeSet(l) -> ".set_data(" ^ "[" ^ String.concat "," (List.map string_of_expr l) ^ "]" ^ ")" *)
+  | NodeGet(n, idx) -> string_of_expr n ^ ".get( " ^ string_of_expr idx ^ ")"
 
 let rec string_of_stmt = function
     Block(stmts) ->

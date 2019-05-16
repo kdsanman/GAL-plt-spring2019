@@ -136,6 +136,10 @@ int node_get_int(struct node * l)
     return *(int *) answer;
 }
 
+int get_node(struct node * n){
+  return node_get_int(n);
+}
+
 /*
  * Sets the element at index i to data.
  * Will return 1 if successful (valid i)
